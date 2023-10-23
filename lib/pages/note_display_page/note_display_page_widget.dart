@@ -1,4 +1,3 @@
-import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -9,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'note_display_page_model.dart';
 export 'note_display_page_model.dart';
+
+import '../../powersync/models/notes.dart';
 
 class NoteDisplayPageWidget extends StatefulWidget {
   const NoteDisplayPageWidget({
@@ -91,13 +92,8 @@ class _NoteDisplayPageWidgetState extends State<NoteDisplayPageWidget> {
           top: true,
           child: Padding(
             padding: EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 24.0),
-            child: FutureBuilder<List<NotesRow>>(
-              future: NotesTable().querySingleRow(
-                queryFn: (q) => q.eq(
-                  'id',
-                  widget.id,
-                ),
-              ),
+            child: FutureBuilder<List<Notes>>(
+              future: Notes.getNoteById((widget.id).toString()),
               builder: (context, snapshot) {
                 // Customize what your widget looks like when it's loading.
                 if (!snapshot.hasData) {
@@ -113,7 +109,7 @@ class _NoteDisplayPageWidgetState extends State<NoteDisplayPageWidget> {
                     ),
                   );
                 }
-                List<NotesRow> listViewNotesRowList = snapshot.data!;
+                List<Notes> listViewNotesRowList = snapshot.data!;
                 final listViewNotesRow = listViewNotesRowList.isNotEmpty
                     ? listViewNotesRowList.first
                     : null;
@@ -136,12 +132,12 @@ class _NoteDisplayPageWidgetState extends State<NoteDisplayPageWidget> {
                             ),
                       ),
                     ),
-                    if (listViewNotesRow?.imageLink != null &&
-                        listViewNotesRow?.imageLink != '')
+                    if (listViewNotesRow?.image_link != null &&
+                        listViewNotesRow?.image_link != '')
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.network(
-                          listViewNotesRow!.imageLink!,
+                          listViewNotesRow!.image_link!,
                           width: 300.0,
                           height: 200.0,
                           fit: BoxFit.cover,

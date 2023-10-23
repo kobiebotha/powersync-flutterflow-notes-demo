@@ -5,11 +5,12 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'create_note_page_model.dart';
 export 'create_note_page_model.dart';
+
+import '../../powersync/models/notes.dart';
 
 class CreateNotePageWidget extends StatefulWidget {
   const CreateNotePageWidget({Key? key}) : super(key: key);
@@ -29,9 +30,7 @@ class _CreateNotePageWidgetState extends State<CreateNotePageWidget> {
     _model = createModel(context, () => CreateNotePageModel());
 
     _model.textController1 ??= TextEditingController();
-    _model.textFieldFocusNode1 ??= FocusNode();
     _model.textController2 ??= TextEditingController();
-    _model.textFieldFocusNode2 ??= FocusNode();
   }
 
   @override
@@ -43,15 +42,6 @@ class _CreateNotePageWidgetState extends State<CreateNotePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -98,7 +88,6 @@ class _CreateNotePageWidgetState extends State<CreateNotePageWidget> {
               children: [
                 TextFormField(
                   controller: _model.textController1,
-                  focusNode: _model.textFieldFocusNode1,
                   autofocus: true,
                   obscureText: false,
                   decoration: InputDecoration(
@@ -158,7 +147,6 @@ class _CreateNotePageWidgetState extends State<CreateNotePageWidget> {
                         EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 20.0),
                     child: TextFormField(
                       controller: _model.textController2,
-                      focusNode: _model.textFieldFocusNode2,
                       autofocus: true,
                       obscureText: false,
                       decoration: InputDecoration(
@@ -305,13 +293,8 @@ class _CreateNotePageWidgetState extends State<CreateNotePageWidget> {
                 ),
                 FFButtonWidget(
                   onPressed: () async {
-                    await NotesTable().insert({
-                      'created_at':
-                          supaSerialize<DateTime>(getCurrentTimestamp),
-                      'title': _model.textController1.text,
-                      'note': _model.textController2.text,
-                      'image_link': _model.uploadedFileUrl,
-                    });
+                    await Notes.createNote(_model.textController1.text,
+                        _model.textController2.text, _model.uploadedFileUrl);
                     context.safePop();
                   },
                   text: 'Create',
