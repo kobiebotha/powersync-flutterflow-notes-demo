@@ -1,15 +1,15 @@
 import '/auth/supabase_auth/auth_util.dart';
-import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'home_list_page_model.dart';
 export 'home_list_page_model.dart';
+
+import '../../powersync/models/notes.dart';
 
 class HomeListPageWidget extends StatefulWidget {
   const HomeListPageWidget({Key? key}) : super(key: key);
@@ -38,15 +38,6 @@ class _HomeListPageWidgetState extends State<HomeListPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -114,10 +105,8 @@ class _HomeListPageWidgetState extends State<HomeListPageWidget> {
             decoration: BoxDecoration(
               color: FlutterFlowTheme.of(context).secondaryBackground,
             ),
-            child: FutureBuilder<List<NotesRow>>(
-              future: NotesTable().queryRows(
-                queryFn: (q) => q,
-              ),
+            child: FutureBuilder<List<Notes>>(
+              future: Notes.getAllNotes(),
               builder: (context, snapshot) {
                 // Customize what your widget looks like when it's loading.
                 if (!snapshot.hasData) {
@@ -133,7 +122,7 @@ class _HomeListPageWidgetState extends State<HomeListPageWidget> {
                     ),
                   );
                 }
-                List<NotesRow> listViewNotesRowList = snapshot.data!;
+                List<Notes> listViewNotesRowList = snapshot.data!;
                 return ListView.builder(
                   padding: EdgeInsets.zero,
                   scrollDirection: Axis.vertical,
@@ -188,7 +177,10 @@ class _HomeListPageWidgetState extends State<HomeListPageWidget> {
                                           ),
                                     ),
                                     Text(
-                                      listViewNotesRow.createdAt.toString(),
+                                      dateTimeFormat(
+                                          'relative',
+                                          DateTime.parse(
+                                              listViewNotesRow.created_at)),
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium,
                                     ),
