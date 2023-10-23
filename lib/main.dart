@@ -14,13 +14,42 @@ import 'flutter_flow/internationalization.dart';
 import 'flutter_flow/nav/nav.dart';
 import 'index.dart';
 
+import 'package:flutter/foundation.dart';
+import './powersync/powersync.dart';
+import 'package:logging/logging.dart';
+
 void main() async {
+  Logger.root.level = Level.INFO;
+  Logger.root.onRecord.listen((record) {
+    if (kDebugMode) {
+      print(
+          '[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+
+      if (record.error != null) {
+        print(record.error);
+      }
+      if (record.stackTrace != null) {
+        print(record.stackTrace);
+      }
+    }
+  });
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
 
   await SupaFlow.initialize();
 
   await FlutterFlowTheme.initialize();
+
+  await openDatabase();
+
+  waitForInitialSync();
+
+  try {
+    final test_query = await db.execute('SELECT * from notes');
+    log.info('test_query results = $test_query');
+  } on Exception catch (e) {
+    log.info('error querying notes table: $e');
+  }
 
   runApp(MyApp());
 }
